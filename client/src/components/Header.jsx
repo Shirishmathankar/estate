@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="bg-slate-200 shadow-lg flex justify-between items-center mx-auto p-3">
+    <header className="bg-slate-200 shadow-lg flex justify-around items-center mx-auto p-3">
      <Link to='/'> <h1>
         <span className="text-slate-400 text-sm sm:text-xl">E</span>
         <span className="text-sm sm:text-xl">State</span>
