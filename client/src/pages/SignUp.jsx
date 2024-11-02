@@ -17,7 +17,7 @@ const SignUp = () => {
   }
     const handleSubmit = async (e) => {
       e.preventDefault();
-    
+       setError(null)
       if(!formData.username||!formData.email||!formData.password){
         setError("all feilds are mandetory")
         setLoading(false)
