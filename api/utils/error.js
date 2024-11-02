@@ -1,6 +1,6 @@
-const errorhandler=(massage,statusCode)=>{
+const errorhandler=(message,statusCode)=>{
     const error=new Error();
-    error.massage=massage;
+    error.message=message;
     error.statusCode=statusCode;
     return error
 }
