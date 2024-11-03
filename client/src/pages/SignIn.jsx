@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import Header from '../components/Header'
 import { Link,useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { signInstart,signInsuccess,signInfailure } from '../redux/user/userSlice';
+
 
 const SignIn = () => {
   const [formData,setformData]=useState({});
-  const [Error,setError]=useState(null);
-  const [Loading,setLoading]=useState(false);
+  const dispatch=useDispatch()
+  const {loading,error}=useSelector((state)=>state.user)
   const nevigate=useNavigate();
   
   const handleInput=(e)=>{
@@ -17,15 +20,14 @@ const SignIn = () => {
   }
     const handleSubmit = async (e) => {
       e.preventDefault();
-       setError(null)
+       dispatch(signInstart())
        if(!formData.email||!formData.password){
-        setError("all feilds are mandetory")
-        setLoading(false)
+        dispatch(signInfailure("all field are mandatory "))
         return
       }
       try {
-        setLoading(true);
-        setError(null); // Reset error before submission
+        dispatch(signInstart())
+         // Reset error before submission
     
         const res = await fetch('/api/auth/signin', {
           method: 'POST',
@@ -38,18 +40,15 @@ const SignIn = () => {
         const data=await res.json();
         console.log(data)
         if (data.success === false) {
-          setLoading(false);
-          setError(data.message);
+          dispatch(signInfailure(data.message))
           return;
         }
         
-        setLoading(false);
-        setError(null);
+        dispatch(signInsuccess(data))
         nevigate('/');
     
       } catch (error) {
-        setError(error.message || "An error occurred. Please try again.");
-        setLoading(false);
+        dispatch(signInfailure(error.message || "An error occurred. Please try again."))
       }
     };
     
@@ -63,14 +62,14 @@ const SignIn = () => {
         
          <input type='email' placeholder='email' id='email' className='border p-3 rounded-lg' onChange={handleInput}/>
          <input type='password' placeholder='password' id='password' className='border p-3 rounded-lg' onChange={handleInput}/>
-         <button disabled={Loading} className='my-3 border p-3 rounded-lg bg-slate-600 hover:opacity-95 disabled:opacity-80 uppercase text-white' >{Loading?"Loading...":"sign in"}</button>
+         <button disabled={loading} className='my-3 border p-3 rounded-lg bg-slate-600 hover:opacity-95 disabled:opacity-80 uppercase text-white' >{loading?"Loading...":"sign in"}</button>
       </form>
       <div className='capitalize flex gap-2 mt-2'>
         <p>dont have an account?</p>
-       <Link to='/sign-in'><span className='text-blue-500 hover:underline '>sign up</span></Link>
+       <Link to='/sign-up'><span className='text-blue-500 hover:underline '>sign up</span></Link>
         
       </div> 
-      {Error&&<p className='text-red-600'>{Error}</p>}
+      {error&&<p className='text-red-600'>{error}</p>}
     </div>
     </>
   )

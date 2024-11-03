@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Header from '../components/Header'
 import { Link,useNavigate } from 'react-router-dom'
+import { email_validation, PASSWORD_VALIDATION } from '../utils/expressions';
 
 const SignUp = () => {
   const [formData,setformData]=useState({});
@@ -26,7 +27,19 @@ const SignUp = () => {
       try {
         setLoading(true);
         setError(null); // Reset error before submission
-    
+        const pass=formData.password
+        const validpassword=PASSWORD_VALIDATION.test(pass);
+        const validemail=email_validation.test(formData.email)
+        if(!validpassword){
+          setError("password should one capital letter and digit")
+          setLoading(false)
+          return
+        }
+        if(!validemail){
+          setError("please enter valid email")
+          setLoading(false)
+          return
+        }
         const res = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: {
@@ -69,8 +82,8 @@ const SignUp = () => {
         <p>already have an account?</p>
        <Link to='/sign-in'><span className='text-blue-500 hover:underline '>sign in</span></Link>
         
-      </div> 
-      {Error&&<p className='text-red-600'>{Error}</p>}
+      </div >  
+      {Error&&<p className='text-red-600 '>{Error}</p>}
     </div>
     </>
   )
