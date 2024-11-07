@@ -5,6 +5,7 @@ import SignIn from '../pages/signIn'
 import SignUp from '../pages/SignUp'
 import About from '../pages/About'
 import Profile from '../pages/Profile'
+import Private from './private'
 
 
 const Body = () => {
@@ -24,7 +25,13 @@ const Body = () => {
        },
        {
         path:"/Profile",
-        element:<Profile/>
+        element:<Private/>,
+        children: [
+         {
+           path:"", // Nested path
+           element: <Profile />,
+         },
+       ],
        },
        {
         path:"/about",
