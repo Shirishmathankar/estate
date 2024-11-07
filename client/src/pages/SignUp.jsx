@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Header from '../components/Header'
 import { Link,useNavigate } from 'react-router-dom'
 import { email_validation, PASSWORD_VALIDATION } from '../utils/expressions';
+import Oath from '../components/Oath';
 
 const SignUp = () => {
   const [formData,setformData]=useState({});
@@ -77,6 +78,7 @@ const SignUp = () => {
          <input type='email' placeholder='email' id='email' className='border p-3 rounded-lg' onChange={handleInput}/>
          <input type='password' placeholder='password' id='password' className='border p-3 rounded-lg' onChange={handleInput}/>
          <button disabled={Loading} className='my-3 border p-3 rounded-lg bg-slate-600 hover:opacity-95 disabled:opacity-80 uppercase text-white' >{Loading?"Loading...":"sign up"}</button>
+         <Oath/>
       </form>
       <div className='capitalize flex gap-2 mt-2'>
         <p>already have an account?</p>

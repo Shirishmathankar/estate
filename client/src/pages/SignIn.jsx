@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import { Link,useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { signInstart,signInsuccess,signInfailure } from '../redux/user/userSlice';
+import Oath from '../components/Oath';
 
 
 const SignIn = () => {
@@ -63,13 +64,14 @@ const SignIn = () => {
          <input type='email' placeholder='email' id='email' className='border p-3 rounded-lg' onChange={handleInput}/>
          <input type='password' placeholder='password' id='password' className='border p-3 rounded-lg' onChange={handleInput}/>
          <button disabled={loading} className='my-3 border p-3 rounded-lg bg-slate-600 hover:opacity-95 disabled:opacity-80 uppercase text-white' >{loading?"Loading...":"sign in"}</button>
+         <Oath/>
       </form>
       <div className='capitalize flex gap-2 mt-2'>
         <p>dont have an account?</p>
        <Link to='/sign-up'><span className='text-blue-500 hover:underline '>sign up</span></Link>
         
       </div> 
-      {error&&<p className='text-red-600'>{error}</p>}
+      {error&&<p className='text-red-600 mt-4'>{error}</p>}
     </div>
     </>
   )
