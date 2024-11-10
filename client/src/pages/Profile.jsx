@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import Header from '../components/Header'
 import { useSelector } from 'react-redux'
 
 const Profile = () => {
   const {currentUser}=useSelector(state=>state.user)
+  const fileRef=useRef(null);
+  const handlesubmit=()=>{
+    const storage=getStorage()
+  }
+
   return (
     <div>
       <Header/>
@@ -11,7 +16,8 @@ const Profile = () => {
       <h1 className='text-3xl font-semibold capitalize text-center mt-6'>profile</h1>
       
       <form className='flex flex-col gap-4'>  
-      <img src={currentUser.avatar} className='self-center cursor-pointer object-cover rounded-full' alt='profile-pic'/>
+        <input type='file' onSubmit={handlesubmit} hidden ref={fileRef}/>
+      <img src={currentUser.avatar} onClick={()=>fileRef.current.click()} className='self-center cursor-pointer object-cover rounded-full' alt='profile-pic'/>
         <input type='text' placeholder='username' id='text' className=' border p-3 rounded-md '/>
         <input type='email' placeholder='email' id='email' className=' border p-3 rounded-md '/>
         <input type='password ' placeholder='password' id='password' className=' border p-3 rounded-md '/>
