@@ -24,7 +24,7 @@ const Header = () => {
         </li></Link>
 
        <Link to='/profile'>
-       {currentUser?<img src={currentUser.avatar} alt="profile" className='rounded-full object-cover w-8 h-8'/>:
+       {currentUser?<img src={currentUser.avatar||"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGylI3uBTUYSwfiDYT9UnFXYPYLChX2ltSJvsjAOKGokgRQeJ158QoAAzk-HyfmuWlTJ8&usqp=CAU"} alt="profile" className='rounded-full object-cover w-8 h-8'/>:
        <li className='hover:underline font-semibold'>
           Sign in
         </li>}</Link>

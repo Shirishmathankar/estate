@@ -1,7 +1,11 @@
 import express from "express"
-import { test } from "../controllers/user.controller.js"
-
+import {userUpdate } from "../controllers/user.controller.js"
+import verfyUser from "../utils/verifyuser.js"
+import { upload } from "../utils/multer.js"
 const  router=express.Router()
 
-router.get("/test",test)
-export default router
+router.post("/update/:id",verfyUser, upload.fields([{
+    name:"avatar",
+    maxCount:1
+  }]),userUpdate)   
+export default router    

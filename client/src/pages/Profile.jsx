@@ -1,32 +1,132 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import Header from '../components/Header'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import {updateUserfailure, updateUserstart, updateUsersuccess } from '../redux/user/userSlice.js'
+
 
 const Profile = () => {
-  const {currentUser}=useSelector(state=>state.user)
+  const {currentUser,loading,error}=useSelector(state=>state.user)
   const fileRef=useRef(null);
-  const handlesubmit=()=>{
-    const storage=getStorage()
+  const dispatch=useDispatch();
+  const [formData,setformData]=useState({})
+
+  const handleClick=(e)=>{
+      setformData({
+        ...formData, [e.target.id]:e.target.value,
+      })
   }
 
+  const handleFileUpload = async () => {
+    if (!fileRef.current.files[0]) {
+      alert('Please select a file to upload.');
+      return;
+    }
+  
+    const file = fileRef.current.files[0];
+    const formData = new FormData();
+    formData.append('avatar', file);
+  
+    try {
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: 'POST',
+        body: formData, // Send FormData directly
+      });
+  
+      const data = await res.json();
+      console.log('Avatar URL:', data);
+      if (data?.success===false) {
+        dispatch(updateUserfailure(data.message));
+        return;
+      }
+      console.log(data.avatar)
+      dispatch(updateUsersuccess(data));
+      alert('File uploaded successfully');
+    } catch (error) {
+      dispatch(updateUserfailure(error.message));
+      alert('File upload failed.');
+    }
+  };
+  
+
+  const handleSubmit=async (e)=>{
+    e.preventDefault()
+    try{
+       dispatch(updateUserstart())
+
+       const res=await fetch(`/api/user/update/${currentUser._id}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(formData)
+         
+       })
+       const data=await res.json();
+       if(data.success===false){
+        
+        dispatch(updateUserfailure(data.message));
+        return 
+       }
+     dispatch(updateUsersuccess(data));
+       
+    }
+    catch(error){
+      dispatch(updateUserfailure(data.message))
+    }
+  }
+  
   return (
     <div>
       <Header/>
       <div className=' max-w-lg mx-auto'> 
       <h1 className='text-3xl font-semibold capitalize text-center mt-6'>profile</h1>
       
-      <form className='flex flex-col gap-4'>  
-        <input type='file' onSubmit={handlesubmit} hidden ref={fileRef}/>
-      <img src={currentUser.avatar} onClick={()=>fileRef.current.click()} className='self-center cursor-pointer object-cover rounded-full' alt='profile-pic'/>
-        <input type='text' placeholder='username' id='text' className=' border p-3 rounded-md '/>
-        <input type='email' placeholder='email' id='email' className=' border p-3 rounded-md '/>
-        <input type='password ' placeholder='password' id='password' className=' border p-3 rounded-md '/>
-        <button className='uppercase bg-slate-700 rounded-md p-3 text-white'>update</button>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>  
+        <input 
+        type='file' 
+        hidden ref={fileRef}
+        onChange={handleFileUpload}
+        />
+
+      <img 
+      src={currentUser.avatar||"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGylI3uBTUYSwfiDYT9UnFXYPYLChX2ltSJvsjAOKGokgRQeJ158QoAAzk-HyfmuWlTJ8&usqp=CAU"}
+      onClick={()=>{fileRef.current.click()}}
+       
+      className='self-center cursor-pointer object-cover rounded-full' alt='profile-pic'
+      />
+
+        <input
+         type='username' 
+         placeholder='username'
+         id='username' 
+         defaultValue={currentUser.username}
+         onChange={handleClick}  
+         className=' border p-3 rounded-md '
+        />
+        <input
+        type='email' 
+        placeholder='email' 
+        id='email' 
+        defaultValue={currentUser.email}
+         onChange={handleClick}       
+        className=' border p-3 rounded-md '
+        />
+        <input 
+        type='password' 
+        placeholder='password' 
+        id='password'
+        defaultValue={currentUser.password}
+        onChange={handleClick}
+        className=' border p-3 rounded-md '
+        />
+        <button 
+        className='uppercase bg-slate-700 rounded-md p-3 text-white'>{loading?'loading':'upadte'}
+        </button>
       </form>
       <div className='flex justify-between text-red-600 mt-3'>
         <span className='cursor-pointer'>Delete Account </span>
         <span className='cursor-pointer'>Sign Up</span>
+
       </div>
+      <p className='text-red-700 my-2'>{error?error:""}</p>
       </div>
     </div>
   )
