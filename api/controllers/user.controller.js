@@ -4,6 +4,7 @@ import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
 import uploadcloudinary from "../utils/cloudinary.js"
 
+
 export const userUpdate= async (req,res,next)=>{
     if(req.user.id!=req.params.id){
      return next(errorhandler("you can do changes only in your account",401))
@@ -35,3 +36,20 @@ export const userUpdate= async (req,res,next)=>{
     }    
   
 }
+
+export const userDelete=async (req,res,next)=>{
+
+   if(req.user.id!=req.params.id){
+    next(errorhandler(401,"you can delete only your account"));
+    }
+    try{
+       await User.findByIdAndDelete(req.user.id);
+       res.clearCookie("access_token")
+       res.status(200).json("user delete successfully");
+    }
+    catch(error){
+      next(error);
+    }
+
+}
+
