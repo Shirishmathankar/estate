@@ -47,14 +47,13 @@ const listingSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    type: {
-      type: String,
-      required: [true, "Type is required"],
-      enum: ["house", "apartment", "condo"],
-    },
     offer: {
       type: Boolean,
       default: false,
+    },
+    type:{
+        type:String,
+
     },
     imageUrls: {
       type: [String], // Ensures array of strings (URLs)
@@ -66,9 +65,8 @@ const listingSchema = new mongoose.Schema(
       },
     },
     userRef: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type:String,
+      
     },
   },
   { timestamps: true }

@@ -1,13 +1,21 @@
-import express from "express"
-import { createListing } from "../controllers/listing.controller.js"
-import { upload } from "../utils/multer.js"
+import express from "express";
+import { createListing, uploadImages } from "../controllers/listing.controller.js";
+import { upload } from "../utils/multer.js";
 
-const router=express.Router()
+const router = express.Router();
 
+// ✅ Route for creating a listing with multiple image uploads
+router.post(
+  "/create",
+  upload.fields([{ name: "imageUrls", maxCount: 7 }]), 
+  createListing
+);
 
-router.post('/create',upload.fields([{
-    name:"imageUrls",
-    maxCount:1
-  }]),createListing)
- 
-export default router
+// ✅ Separate route for uploading images
+router.post(
+  "/upload",
+  upload.array("images", 6), 
+  uploadImages
+);
+
+export default router;
