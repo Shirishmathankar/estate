@@ -5,8 +5,8 @@ import SignIn from '../pages/SignIn'
 import SignUp from '../pages/SignUp'
 import About from '../pages/About'
 import Profile from '../pages/Profile'
-import Private from './Private'
-
+import Private from './private'
+import CreateListing from '../pages/CreateListing'
 
 const Body = () => {
     const Applayout=createBrowserRouter([
@@ -31,15 +31,17 @@ const Body = () => {
            path:"", // Nested path
            element: <Profile />,
          },
-       ],
+         {
+          path:"Create-Listing",
+          element:<CreateListing/>,
+         }
+        ]
        },
        {
         path:"/about",
         element:<About/>
        }
         
-      
-       
     ])
     
       return (

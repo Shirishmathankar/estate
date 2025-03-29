@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import { useDispatch, useSelector } from 'react-redux'
 import {deleteUserfailure, deleteUserstart, deleteUsersuccess, signoutUserfailure, signoutUserstart, signoutUsersuccess, updateUserfailure, updateUserstart, updateUsersuccess } from '../redux/user/userSlice.js'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const Profile = () => {
   const {currentUser,loading,error}=useSelector(state=>state.user)
@@ -157,8 +158,9 @@ const Profile = () => {
         className=' border p-3 rounded-md '
         />
         <button 
-        className='uppercase bg-slate-700 rounded-md p-3 text-white'>{loading?'loading':'upadte'}
+        className='uppercase bg-slate-700 rounded-md p-3 text-white hover:opacity-95'>{loading?'loading':'upadte'}
         </button>
+        <Link className='uppercase bg-green-700 rounded-md p-3 text-white text-center hover:opacity-95 ' to={"Create-Listing"}>Create Listing</Link>
       </form>
       <div className='flex justify-between text-red-600 mt-3'>
         <span onClick={handelDelete}className='cursor-pointer'>Delete Account </span>

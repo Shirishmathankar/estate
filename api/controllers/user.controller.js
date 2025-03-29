@@ -4,38 +4,61 @@ import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
 import uploadcloudinary from "../utils/cloudinary.js"
 
-
-export const userUpdate= async (req,res,next)=>{
-    if(req.user.id!=req.params.id){
-     return next(errorhandler("you can do changes only in your account",401))
+export const userUpdate = async (req, res, next) => {
+  try {
+    // Check if user is authorized to update this account
+    if (req.user.id !== req.params.id) {
+      return next(errorHandler("You can only make changes to your own account", 401));
     }
-    try{
-      if(req.body.password){
-        req.body.password= bcryptjs.hashSync(req.body.password,10)
-      }
 
-      const avatarlocalpath=await req.files?.avatar[0]?.path;
-    console.log(avatarlocalpath)
-     const avatar=await uploadcloudinary(avatarlocalpath)
-      
-      const updateUser= await User.findByIdAndUpdate(req.params.id,{
-      $set:{
-        username:req.body.username,
-        email:req.body.email,
-        password:req.body.password,
-        avatar:avatar.secure_url
-      }
- 
-      },{new:true})
-      console.log(updateUser) 
-      const {password , ...rest}=updateUser._doc
-      res.status(200).json(rest);
+    // Initialize update fields
+    const updateFields = {};
+
+    // Hash password if provided
+    if (req.body.password) {
+      updateFields.password = bcryptjs.hashSync(req.body.password, 10);
     }
-    catch(error){
-       next(error);
-    }    
-  
-}
+
+    // Update username & email if provided
+    if (req.body.username) updateFields.username = req.body.username;
+    if (req.body.email) updateFields.email = req.body.email;
+
+    // Handle Avatar Upload if Provided
+    if (req.files?.avatar && req.files.avatar.length > 0) {
+      const avatarLocalPath = req.files.avatar[0].path;
+      console.log("Avatar Local Path:", avatarLocalPath);
+
+      try {
+        const uploadedAvatar = await uploadcloudinary(avatarLocalPath);
+        if (uploadedAvatar?.secure_url) {
+          updateFields.avatar = uploadedAvatar.secure_url;
+        }
+      } catch (cloudinaryError) {
+        console.error("Cloudinary Upload Error:", cloudinaryError);
+        return next(errorHandler("Failed to upload avatar", 500));
+      }
+    }
+
+    // Update user in database
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, 
+      { $set: updateFields }, 
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return next(errorHandler("User not found", 404));
+    }
+
+    console.log("Updated User:", updatedUser);
+
+    // Remove password from response
+    const { password, ...rest } = updatedUser._doc;
+
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const userDelete=async (req,res,next)=>{
 
