@@ -53,6 +53,7 @@ const listingSchema = new mongoose.Schema(
     },
     type:{
         type:String,
+        required:true
 
     },
     imageUrls: {
@@ -66,7 +67,7 @@ const listingSchema = new mongoose.Schema(
     },
     userRef: {
       type:String,
-      
+      require:true
     },
   },
   { timestamps: true }

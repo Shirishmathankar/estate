@@ -10,7 +10,9 @@ export default defineConfig({
         changeOrigin:true,
         secure:false
       },
-
+      optimizeDeps: {
+        exclude: ['swiper'], // Add swiper or any problematic dependency
+      },
      },
   },
   plugins: [react()],

@@ -7,6 +7,8 @@ import About from '../pages/About'
 import Profile from '../pages/Profile'
 import Private from './private'
 import CreateListing from '../pages/CreateListing'
+import UpdateListing from '../pages/UpdateListing'
+import Listing from '../pages/Listing'
 
 const Body = () => {
     const Applayout=createBrowserRouter([
@@ -34,12 +36,20 @@ const Body = () => {
          {
           path:"Create-Listing",
           element:<CreateListing/>,
+         },
+         {
+          path:"Update-Listing/:listingid",
+          element:<UpdateListing/>,
          }
         ]
        },
        {
         path:"/about",
         element:<About/>
+       },
+       {
+        path:"/listing/:listingid",
+        element:<Listing/>
        }
         
     ])

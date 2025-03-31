@@ -1,21 +1,26 @@
 import express from "express";
 import { createListing, uploadImages } from "../controllers/listing.controller.js";
 import { upload } from "../utils/multer.js";
+import verfyUser from "../utils/verifyuser.js";
+import { deleteListing } from "../controllers/listing.controller.js";
+import { updateListing } from "../controllers/listing.controller.js";
+import { getListing } from "../controllers/listing.controller.js";
 
 const router = express.Router();
 
-// ✅ Route for creating a listing with multiple image uploads
+
 router.post(
   "/create",
   upload.fields([{ name: "imageUrls", maxCount: 7 }]), 
   createListing
 );
 
-// ✅ Separate route for uploading images
 router.post(
   "/upload",
   upload.array("images", 6), 
   uploadImages
 );
-
+router.delete("/delete/:id",verfyUser,deleteListing)
+router.post("/update/:id",verfyUser,updateListing)
+router.get("/getListing/:id",getListing)
 export default router;

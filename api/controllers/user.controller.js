@@ -3,6 +3,7 @@ import errorhandler from "../utils/error.js"
 import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
 import uploadcloudinary from "../utils/cloudinary.js"
+import { Listing } from "../models/listing.model.js"
 
 export const userUpdate = async (req, res, next) => {
   try {
@@ -26,7 +27,6 @@ export const userUpdate = async (req, res, next) => {
     // Handle Avatar Upload if Provided
     if (req.files?.avatar && req.files.avatar.length > 0) {
       const avatarLocalPath = req.files.avatar[0].path;
-      console.log("Avatar Local Path:", avatarLocalPath);
 
       try {
         const uploadedAvatar = await uploadcloudinary(avatarLocalPath);
@@ -48,10 +48,7 @@ export const userUpdate = async (req, res, next) => {
     if (!updatedUser) {
       return next(errorHandler("User not found", 404));
     }
-
-    console.log("Updated User:", updatedUser);
-
-    // Remove password from response
+// Remove password from response
     const { password, ...rest } = updatedUser._doc;
 
     res.status(200).json(rest);
@@ -76,3 +73,41 @@ export const userDelete=async (req,res,next)=>{
 
 }
 
+
+
+export const getUserListings = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return next(errorHandler("Unauthorized access", 401));
+    }
+      console.log("user",req.user.id)
+      console.log("id",req.params.id)
+    if (req.user.id.toString() !== req.params.id) {
+      return next(errorHandler("You can only check your own listings", 403));
+    }
+
+    const listings = await Listing.find({ userRef: req.params.id });
+
+    if (!listings.length) {
+      return res.status(404).json({ success: false, message: "No listings found" });
+    }
+
+    res.status(200).json({ success: true, listings });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUser = async (req, res ,next)=>{
+  try {
+    
+   const user =await User.findById(req.params.id);
+
+   if(!user) return next(errorhandler("user not found!",404))
+    const  {password : pass , ...rest} = user._doc
+    res.status(200).json(rest)
+  }
+  catch(error){
+    next(error);
+  }
+};

@@ -1,7 +1,7 @@
-
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 import { Listing } from "../models/listing.model.js";
 import uploadcloudinary from "../utils/cloudinary.js";
+import errorhandler from "../utils/error.js";
 
 export const createListing = async (req, res, next) => {
   try {
@@ -39,17 +39,16 @@ export const createListing = async (req, res, next) => {
       discountPrice,
       bathrooms: Number(req.body.bathrooms) || 1, // Default to 1 if missing
       bedrooms: Number(req.body.bedrooms) || 1, // Default to 1 if missing
-      furnished: req.body.furnished === "true",
-      parking: req.body.parking === "true",
+      furnished: req.body.furnished,
+      parking: req.body.parking,
       type: req.body.type,
-      offer: req.body.offer === "true",
+      offer: req.body.offer,
       userRef: req.body.userRef,
       imageUrls,
     });
 
     await listing.save();
 
-    console.log("✅ Listing Saved in MongoDB:", listing);
     res.status(201).json({ message: "✅ Listing created successfully", listing });
   } catch (error) {
     console.error("❌ Error Creating Listing:", error);
@@ -81,8 +80,6 @@ export const uploadImages = async (req, res, next) => {
       console.error("❌ Image Upload Failed:", error);
       return res.status(500).json({ success: false, message: "❌ Image upload failed." });
     }
-
-    console.log("✅ Images uploaded:", imageUrls);
     res.status(200).json({ success: true, imageUrls });
   } catch (error) {
     console.error("❌ Error in uploadImages API:", error);
@@ -90,3 +87,51 @@ export const uploadImages = async (req, res, next) => {
   }
 };
 
+export const deleteListing = async(req, res ,next) =>{
+    const listing= await Listing.findById(req.params.id);
+    if(!listing){
+      return next(errorhandler('listing not found ', 404))
+    }
+    if(req.user.id!==listing.userRef.toString()){
+      return next(errorhandler('you can only delete your listings',401))
+    }
+
+    try {
+      await Listing.findByIdAndDelete(req.params.id)
+      res.status(201).json("listing Created succesfully")
+    } catch (error) {
+      next(error)
+    }
+};
+
+export const updateListing = async(req,res,next)=>{
+  const listing = await Listing.findById(req.params.id)
+  if(!listing){
+    next(errorhandler("listing not found",400))
+  }
+  if(req.user.id!==listing.userRef.toString())
+  {
+    next(errorhandler("you can edit only your listing", 402))
+  }
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {new: true}
+    );
+    res.status(200).json(updatedListing)
+  } catch (error) {
+    next(error)
+  }
+}
+export const getListing = async(req,res,next)=>{
+   const listing=await Listing.findById(req.params.id)
+   if(!listing){
+    next(errorhandler("no listing found",400))
+   }
+   try {
+    res.status(200).json(listing)
+   } catch (error) {
+    next(error)
+   }
+}

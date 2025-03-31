@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import {deleteUserfailure, deleteUserstart, deleteUsersuccess, signoutUserfailure, signoutUserstart, signoutUsersuccess, updateUserfailure, updateUserstart, updateUsersuccess } from '../redux/user/userSlice.js'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+
 
 const Profile = () => {
   const {currentUser,loading,error}=useSelector(state=>state.user)
@@ -11,6 +13,8 @@ const Profile = () => {
   const dispatch=useDispatch();
   const [formData,setformData]=useState({})
   const nevigate=useNavigate();
+  const [ListingError,setListingError]=useState(false)
+  const [UserListings,setUserListings]=useState([])
   const handelsignout=async()=>{
      try {
         dispatch(signoutUserstart())
@@ -107,7 +111,41 @@ const Profile = () => {
       dispatch(updateUserfailure(data.message))
     }
   }
+
+  const handelShowListing = async () => {
+    try {
+      setListingError(false);
+      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const data = await res.json();
   
+      if (data.listings.success===false) {
+        
+        setListingError(true);
+        return;
+      }
+  
+      setUserListings([...data.listings]); // Ensure new array reference
+     
+    } catch (error) {
+      setListingError(true);
+    }
+  };
+  const ListDelete= async (listingId)=>{
+    try {
+      const res= await fetch(`/api/listing/delete/${listingId}`
+        ,{method:'DELETE',
+
+      })
+      const data=res.json();
+      if(data.success=== false){
+        console.log(data.message);
+        return 
+      }
+     setUserListings((prev)=>prev.filter((listing)=>listing._id!=listingId))
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div>
       <Header/>
@@ -168,7 +206,32 @@ const Profile = () => {
 
       </div>
       <p className='text-red-700 my-2'>{error?error:""}</p>
+      <button className='text-green-600 w-full' onClick={handelShowListing}>Show Listings</button>
+      {ListingError&&<p className='text-red-600 '>Listing Error </p>}
+      {UserListings?.length > 0 &&(
+       UserListings.map((listing) => (
+    <div key={listing._id} className="border p-4 rounded-lg flex justify-between items-center">
+      <Link to={`/listing/${listing._id}`} className="block">
+        <img 
+          src={listing?.imageUrls?.[0]} 
+          alt="Listing Cover" 
+          className="w-16 h-16 object-contain"
+        />
+      </Link>
+      <Link to={`/listing/${listing._id}`} className='text-slate-700 font-semibold flex-1 hover:underline truncate'>
+        <p >{listing.name}</p>
+      </Link>
+      <div className='flex flex-col items-center'>
+        <button className='text-red-700 uppercase' onClick={()=>ListDelete(listing._id)}>Delete</button>
+      
+        <Link to={`Update-Listing/${listing._id}`}><button className='text-green-700 uppercase'>Edit</button></Link>
       </div>
+    </div>
+  ))
+      )}
+
+      </div>
+      
     </div>
   )
 }

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+;
 
 export default function CreateListing() {
   const [formData, setFormData] = useState({
@@ -12,24 +15,36 @@ export default function CreateListing() {
     bedrooms: 1,
     furnished: false,
     parking: false,
-    type: 'sell', // Default to 'sell' or 'rent'
+    type: 'rent', 
     offer: false,
-    userRef: 'USER_ID', // Replace with logged-in user ID
-    imageUrls: [], // Store uploaded image URLs
+    userRef: 'USER_ID', 
+    imageUrls: [], 
   });
-
+  
+  const {currentUser}=useSelector(state=>state.user)
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [creatingListing, setCreatingListing] = useState(false);
-
+  const navigate=useNavigate()
   // Handle input change
   const handleChange = (e) => {
     const { id, type, value, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: type === 'checkbox' ? checked : value,
-    }));
+    setFormData((prev) => {
+      let newValue;
+      if (type === "checkbox") {
+        newValue = checked; // ✅ Ensures true/false values for checkboxes
+      } else if (type === "number") {
+        newValue = Number(value); // ✅ Ensures number values
+      } else {
+        newValue = value;
+      }
+      
+      const updatedForm = { ...prev, [id]: newValue };
+   
+      return updatedForm;
+    });
   };
+  
 const handelDelete=(index)=>{
   setFormData({
     ...formData,
@@ -63,7 +78,7 @@ const handelDelete=(index)=>{
 
       const data = await response.json();
       if (data.success) {
-        setFormData((prev) => ({ ...prev, imageUrls: data.imageUrls })); // Store URLs in state
+        setFormData((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ...data.imageUrls] }));
         alert('Images uploaded successfully!');
       } else {
         alert('Image upload failed');
@@ -91,16 +106,18 @@ const handelDelete=(index)=>{
       const response = await fetch('/api/listing/create', { // Backend listing route
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({...formData,
+          userRef : currentUser._id
+        }),
       });
 
       const data = await response.json();
       if (data) {
         alert('Listing created successfully!');
-        console.log(data);
       } else {
         alert('Failed to create listing');
       }
+      navigate(`/listing/${data?.listing?._id}`)
     } catch (error) {
       console.error('Error:', error);
       alert('Error creating listing');
@@ -156,13 +173,15 @@ const handelDelete=(index)=>{
               <div className='flex items-center gap-2'>
                 <input type="number" id="regularPrice" className='p-3 border rounded-lg' 
                   value={formData.regularPrice} onChange={handleChange} required />
-                <p>Regular Price ($/Month)</p>
+                <p>Regular Price </p>
+                {formData.type==="rent"&&<span>($/Month)</span>}
               </div>
-              <div className='flex items-center gap-2'>
+              {formData.offer&&<div className='flex items-center gap-2'>
                 <input type="number" id="discountPrice" className='p-3 border rounded-lg' 
                   value={formData.discountPrice} onChange={handleChange} required />
-                <p>Discount Price ($/Month)</p>
-              </div>
+                <p>Discount Price </p>
+                {formData.type==="rent"&&<span>($/Month)</span>}
+              </div>}
             </div>
           </div>
 
@@ -189,6 +208,7 @@ const handelDelete=(index)=>{
               className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95'>
               {creatingListing ? 'Creating...' : 'Create Listing'}
             </button>
+            
           </div>
          
         </form>
