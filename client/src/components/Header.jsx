@@ -11,55 +11,57 @@ const Header = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams(window.location.search);
-    urlParams?.set('searchTerm', searchTerm);
-    const searchQuery = urlParams.toString();
-    navigate(`/search?${searchQuery}`);
+    urlParams.set('searchTerm', searchTerm);
+    navigate(`/search?${urlParams.toString()}`);
   };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const searchTermFormUrl = urlParams.get('searchTerm');
-    if (searchTermFormUrl) {
-      setSearchTerm(searchTermFormUrl);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
     }
   }, [location.search]);
 
   return (
-    <div className="bg-slate-200 shadow-lg w-full">
-      <header className="flex flex-wrap justify-between items-center p-3 max-w-6xl mx-auto gap-2">
+    <div className="bg-slate-200 shadow-md w-full">
+      <header className="flex justify-between items-center p-3 max-w-6xl mx-auto gap-4 overflow-x-auto">
         {/* Logo */}
-        <Link to="/">
-          <h1 className="text-slate-700 text-lg sm:text-xl font-semibold whitespace-nowrap">
+        <Link to="/" className="flex-shrink-0">
+          <h1 className="text-slate-700 text-sm sm:text-xl font-bold whitespace-nowrap">
             <span className="text-slate-400">ShirishE</span>
             <span>State</span>
           </h1>
         </Link>
 
-        {/* Search Bar */}
+        {/* Search bar */}
         <form
           onSubmit={handleSubmit}
-          className="flex items-center flex-1 max-w-sm bg-slate-50 px-3 py-2 rounded-md"
+          className="flex items-center bg-slate-50 px-2 py-1 rounded-md w-full max-w-[300px] sm:max-w-[400px]"
         >
           <input
             type="text"
             placeholder="Search..."
-            className="flex-1 bg-transparent focus:outline-none text-sm"
-            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-grow bg-transparent focus:outline-none text-sm"
             value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button type="submit">
             <FaSearch className="text-slate-600" />
           </button>
         </form>
 
-        {/* Navigation / Profile */}
-        <ul className="flex items-center gap-4 ml-2 whitespace-nowrap">
-          <Link to="/">
-            <li className="hover:underline font-semibold text-sm">Home</li>
+        {/* Navigation */}
+        <ul className="flex items-center gap-4 flex-shrink-0">
+          {/* Show only on sm and above */}
+          <Link to="/" className="hidden sm:inline">
+            <li className="hover:underline font-medium text-sm sm:text-base">Home</li>
           </Link>
-          <Link to="/about">
-            <li className="hover:underline font-semibold text-sm">About</li>
+          <Link to="/about" className="hidden sm:inline">
+            <li className="hover:underline font-medium text-sm sm:text-base">About</li>
           </Link>
+
+          {/* Profile or Sign in - Always visible */}
           <Link to="/profile">
             {currentUser ? (
               <img
@@ -71,7 +73,9 @@ const Header = () => {
                 className="rounded-full object-cover w-8 h-8"
               />
             ) : (
-              <li className="hover:underline font-semibold text-sm">Sign in</li>
+              <li className="hover:underline font-medium text-sm sm:text-base">
+                Sign in
+              </li>
             )}
           </Link>
         </ul>
