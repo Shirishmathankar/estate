@@ -9,6 +9,7 @@ import Private from './private'
 import CreateListing from '../pages/CreateListing'
 import UpdateListing from '../pages/UpdateListing'
 import Listing from '../pages/Listing'
+import Search from '../pages/Search'
 
 const Body = () => {
     const Applayout=createBrowserRouter([
@@ -50,6 +51,10 @@ const Body = () => {
        {
         path:"/listing/:listingid",
         element:<Listing/>
+       },
+       {
+         path:"/search",
+         element:<Search/>
        }
         
     ])

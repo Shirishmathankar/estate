@@ -80,8 +80,7 @@ export const getUserListings = async (req, res, next) => {
     if (!req.user) {
       return next(errorHandler("Unauthorized access", 401));
     }
-      console.log("user",req.user.id)
-      console.log("id",req.params.id)
+     
     if (req.user.id.toString() !== req.params.id) {
       return next(errorHandler("You can only check your own listings", 403));
     }
