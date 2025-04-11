@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaSearch } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -26,23 +25,25 @@ const Header = () => {
   }, [location.search]);
 
   return (
-    <div className="bg-slate-200 shadow-lg">
-      <header className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-center mx-auto p-4 max-w-6xl w-full">
+    <div className="bg-slate-200 shadow-lg w-full">
+      <header className="flex flex-wrap justify-between items-center p-3 max-w-6xl mx-auto gap-2">
+        {/* Logo */}
         <Link to="/">
-          <h1 className="text-center sm:text-left">
-            <span className="text-slate-400 text-lg sm:text-xl font-semibold">ShirishE</span>
-            <span className="text-lg sm:text-xl font-semibold">State</span>
+          <h1 className="text-slate-700 text-lg sm:text-xl font-semibold whitespace-nowrap">
+            <span className="text-slate-400">ShirishE</span>
+            <span>State</span>
           </h1>
         </Link>
 
+        {/* Search Bar */}
         <form
           onSubmit={handleSubmit}
-          className="bg-slate-50 w-full sm:w-auto px-3 py-2 rounded-md flex items-center justify-between gap-2"
+          className="flex items-center flex-1 max-w-sm bg-slate-50 px-3 py-2 rounded-md"
         >
           <input
             type="text"
             placeholder="Search..."
-            className="focus:outline-none bg-transparent flex-1 min-w-0"
+            className="flex-1 bg-transparent focus:outline-none text-sm"
             onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
           />
@@ -51,12 +52,13 @@ const Header = () => {
           </button>
         </form>
 
-        <ul className="flex gap-4 items-center">
+        {/* Navigation / Profile */}
+        <ul className="flex items-center gap-4 ml-2 whitespace-nowrap">
           <Link to="/">
-            <li className="hidden sm:inline hover:underline font-semibold">Home</li>
+            <li className="hover:underline font-semibold text-sm">Home</li>
           </Link>
           <Link to="/about">
-            <li className="hidden sm:inline hover:underline font-semibold">About</li>
+            <li className="hover:underline font-semibold text-sm">About</li>
           </Link>
           <Link to="/profile">
             {currentUser ? (
@@ -69,7 +71,7 @@ const Header = () => {
                 className="rounded-full object-cover w-8 h-8"
               />
             ) : (
-              <li className="hover:underline font-semibold">Sign in</li>
+              <li className="hover:underline font-semibold text-sm">Sign in</li>
             )}
           </Link>
         </ul>
